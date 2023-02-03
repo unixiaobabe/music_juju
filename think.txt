@@ -1,0 +1,106 @@
+创建一个typescript的react项目
+npx create-react-app music --template typescript
+
+下载第六版本的路由 redux react-react
+npm i react-router-dom@6 redux react-redux
+
+下载axios发起数据请求
+npm i axios
+
+下载第三方ui库
+npm i antd-mobile
+
+App.tsx页面创建路由
+src里创建pages文件夹用来写页面
+src里创建api用来封装axios请求并设置ts类型
+页面中的index.tsx引入并发起请求获取数据
+src里创建components文件夹用来写组件
+页面中引入组件并将请求的数据通过属性的方式传递
+
+//注意：数据请求写在副作用useEffect中
+
+设置路由：
+在App.tsx中通过:id的方式动态传递数据id
+在页面组件中写页面（接口文件中封装请求，页面中渲染数据，
+若数据需要处理可以通过自定义format函数进行处理）
+点击子元素跳转到详情页并传递id
+因为子组件只用来渲染，所以点击函数通过父组件传递
+id设置在子组件中，从父组件中获取
+父组件中的id通过hook useNavigate传递
+跳转到详情页后，通过hook useParams来获取useNavigate传递的id
+通过id请求数据渲染页面
+页面图标可通过iconfont查找，复制svg，写在src下的assets中被外部引用
+
+
+//注意：传递给详情页的id需要写在子组件的点击事件中
+//ts注意：从useParams中取出的数据可能是undefined，需要在后面加上!
+//告诉ts此数据必传
+//useState的默认值为null时需要将 | null添加在useState的类型中
+//定义类型时[]和不带[]的区别
+
+设置音乐组件，组件通过一个boolean值控制显示小屏还是全屏
+因为音乐组件在所有页面都存在，为了刷新不影响音乐播放，所以在路由外面设置
+浏览器模拟一个音乐数据供小屏调试
+对两个组件的props类型做限制
+//注意 xx?:xx表示前者不一定一定有
+
+为小屏音乐设置样式：
+最左侧是图片，中间是歌手名-歌曲名，右边是播放暂停键
+歌手名的format函数可以提取成utils引入进来
+//注意：因为props类型设置时添加了?,所以在使用时要对类型是否存在做处理
+
+点击播放键将音乐播放，组件中添加一个audio标签
+react通过useRef操作原生dom
+原生dom上通过ref进行绑定
+通过枚举enum定义音乐播放状态
+将设置的音乐状态存起来
+通过订阅事件的方式计算播放状态（通过return箭头函数清理点击后的缓存）
+
+设置toggle函数进行切换
+将切换播放的状态传进组件中，由于传递的数据较多，
+可以将需要传递的数据写进一个对象，通过...的方式全部传递
+添加点击事件，动态控制图标
+
+设置播放的进度圈
+percent通过props传递写在父组件中
+总时间和当前时间通过onloadedmetadata和ondurationchange函数的duration和currentTime获取
+注意获取当前时间写在点击播放事件中
+在小屏组件中设置点击事件切换全屏
+需给切换的点击事件添加阻止冒泡的事件
+
+大屏内分三个部分
+头部：返回箭头和歌曲名歌手名
+中部：旋转的歌曲图片
+底部：播放按钮、上一曲下一曲、进度条
+
+引入上一曲下一曲的图标
+控制上一曲下一曲的函数通过外部传入
+typescript中声明添加?表示可选，因为小屏中没有该函数
+创建一个store文件存放点击的音乐列表(createStore已被弃用)
+(https://redux-toolkit.js.org/tutorials/quick-start):
+- 安装@reduxjs/toolkit react-redux
+- store/index.ts中从@reduxjs/toolkit引入configureStore
+- 向外暴露由configureStore配置的store
+- configureStore中传入一个对象，对象中存在一个reducer对象
+- 在store文件下新建一个reducer文件
+- 在App.tsx中引入store和Provider并使用
+
+给音乐列表中的每一首音乐添加点击事件传入音乐id
+并将当前的音乐id存在store中
+通过useDispatch()获取dispatch方法
+在点击事件中通过dispatch传入id和当前音乐列表
+
+在播放器中传入当前音乐
+- 通过useSelector获取存在store中的数据
+- 通过as运算符设置类型
+- 设置当前音乐，没有则是null，播放器不展示
+
+通过indexOf计算点击音乐在音乐列表中的索引通过
+因为索引需要反复利用，为避免性能问题使用useMemo包起来
+
+处理上一首下一首函数
+注意当前音乐为null以及当前歌曲在第一首和最后一首的情况
+
+问题：
+1、点击播放暂停键不改变
+- 

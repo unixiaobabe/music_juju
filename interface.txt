@@ -1,0 +1,11 @@
+专辑推荐
+/personalized?limit=27
+
+轮播列表
+/banner?type=2
+
+音乐列表
+/playlist/detail
+
+获取音乐audio的src
+https://music.163.com/song/media/outer/url?id=${id}.mp3
